@@ -3,6 +3,7 @@ const gulp = require('gulp');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const browserSync = require('browser-sync').create();
+const concat = require('gulp-concat');
 
 
 //Função para complilar o SASS e adicionar os prefixos
@@ -23,6 +24,16 @@ function compilaSass(){
 //Tarefa de Gulp para a função de SASS
 gulp.task('sass', compilaSass);
 
+//Função para Juntar os arquivos JavaScript
+function gulpJS(){
+    return gulp.src('js/main/*.js')
+        .pipe(concat('main.js'))
+        .pipe(gulp.dest('js/'));
+}
+
+//Tarefa de Gulp para função de Concat
+gulp.task('mainjs', gulpJS);
+
 
 //Função para iniciar o Browser
 function browser(){
@@ -41,6 +52,7 @@ gulp.task('browser-sync', browser);
 //Função de Watch do Gulp
 function watch(){
     gulp.watch('css/scss/*.scss', compilaSass);
+    gulp.watch(['js/*.js','!js/main.js'], gulpJS);
     gulp.watch(['*.html', '*.php']).on('change', browserSync.reload);
 }
 
@@ -50,4 +62,4 @@ gulp.task('watch', watch);
 
 
 //Tarefa padrão do Gulp que inicia o Watch e browser-sync
-gulp.task('default', gulp.parallel('watch', 'browser-sync'));
+gulp.task('default', gulp.parallel('watch', 'browser-sync','sass', 'mainjs'));
